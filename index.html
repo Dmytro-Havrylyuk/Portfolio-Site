@@ -1387,7 +1387,7 @@ function onYouTubeIframeAPIReady() {
       start: tracks[0].startAt || 0
     },
     events: {
-      onReady: function(e) { console.log('YT player ready'); },
+      onReady: function(e) { if (tracks[currentTrack].startAt) { e.target.seekTo(tracks[currentTrack].startAt, true); } },
       onStateChange: function(e) {
         if (e.data === YT.PlayerState.PLAYING) {
           isPlaying = true;
