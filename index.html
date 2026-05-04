@@ -1378,7 +1378,7 @@ setTimeout(function(){
 
 // ===== MUSIC PLAYER - YouTube IFrame API =====
 var tracks = [
-  { title: "Superstar", artist: "Lupe Fiasco ft. Matthew Santos", duration: "4:11", color: "#1a1a2a", emoji: "⭐", ytId: "hVkBlsgthLg" },
+  { title: "Superstar", artist: "Lupe Fiasco ft. Matthew Santos", duration: "4:11", color: "#1a1a2a", emoji: "⭐", ytId: "hVkBlsgthLg", startAt: 12 },
   { title: "You Get What You Give", artist: "New Radicals", duration: "4:05", color: "#1a3a5c", emoji: "🌟", ytId: "Dpv5G0747V4" },
   { title: "Young Folks", artist: "Peter Bjorn and John", duration: "4:37", color: "#1a2a1a", emoji: "🎸", ytId: "DL7-CKirWZE" }
 ];
@@ -1402,6 +1402,7 @@ function onYouTubeIframeAPIReady() {
     height: '160',
     width: '260',
     videoId: tracks[0].ytId,
+    startSeconds: tracks[0].startAt || 0,
     playerVars: {
       autoplay: 0,
       controls: 0,
@@ -1467,7 +1468,7 @@ function selectTrackMusic(i) {
   if (overlay) { overlay.style.display = 'flex'; overlay.querySelector('div').textContent = t.emoji; }
   buildPlaylist();
   if (ytPlayer && ytPlayer.loadVideoById) {
-    ytPlayer.loadVideoById({ videoId: t.ytId, startSeconds: 0 });
+    ytPlayer.loadVideoById({ videoId: t.ytId, startSeconds: t.startAt || 0 });
     // loadVideoById auto-plays, so update state
     isPlaying = true;
     document.getElementById('playBtn').textContent = '⏸';
