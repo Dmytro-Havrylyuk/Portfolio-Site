@@ -1410,13 +1410,13 @@ function onYouTubeIframeAPIReady() {
     height: '160',
     width: '260',
     videoId: tracks[0].ytId,
-    startSeconds: tracks[0].startAt || 0,
     playerVars: {
       autoplay: 0,
       controls: 0,
       modestbranding: 1,
       rel: 0,
-      fs: 0
+      fs: 0,
+      start: tracks[0].startAt || 0
     },
     events: {
       onReady: function(e) { console.log('YT player ready'); },
