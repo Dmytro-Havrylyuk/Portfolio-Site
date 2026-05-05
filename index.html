@@ -1377,17 +1377,15 @@ function onYouTubeIframeAPIReady() {
   ytPlayer = new YT.Player('ytPlayer', {
     height: '160',
     width: '260',
-    videoId: tracks[0].ytId,
     playerVars: {
       autoplay: 0,
       controls: 0,
       modestbranding: 1,
       rel: 0,
-      fs: 0,
-      start: tracks[0].startAt || 0
+      fs: 0
     },
     events: {
-      onReady: function(e) { if (tracks[currentTrack].startAt) { e.target.seekTo(tracks[currentTrack].startAt, true); } },
+      onReady: function(e) { e.target.cueVideoById({ videoId: tracks[0].ytId, startSeconds: tracks[0].startAt || 0 }); },
       onStateChange: function(e) {
         if (e.data === YT.PlayerState.PLAYING) {
           isPlaying = true;
@@ -1501,6 +1499,9 @@ function seekTrack(e, bar) {
 function openMusicPlayer() {
   var mp = document.getElementById('musicPlayer');
   mp.style.display = 'flex';
+  if (ytPlayer && ytPlayer.cueVideoById && !isPlaying) {
+    ytPlayer.cueVideoById({ videoId: tracks[currentTrack].ytId, startSeconds: tracks[currentTrack].startAt || 0 });
+  }
   var vw = window.innerWidth, vh = window.innerHeight - 30;
   mp.style.left = Math.round((vw-300)/2 + 80) + 'px';
   mp.style.top = Math.round((vh-440)/2 - 40) + 'px';
