@@ -1252,7 +1252,22 @@ function centerBrowser(){
   b.style.position='fixed';
   b.style.left='50%';b.style.top='calc(50% - 15px)';b.style.transform='translate(-50%,-50%)';
 }
-window.addEventListener('resize',function(){if(!maximized)centerBrowser();});
+function fixMobileBrowser(){
+  if(window.innerWidth>768)return;
+  var b=document.getElementById('browser');
+  b.style.setProperty('position','fixed','important');
+  b.style.setProperty('left','0','important');
+  b.style.setProperty('top','0','important');
+  b.style.setProperty('transform','none','important');
+  b.style.setProperty('width','100%','important');
+  b.style.setProperty('height','calc(100% - 30px)','important');
+  b.style.setProperty('min-width','0','important');
+  b.style.setProperty('min-height','0','important');
+  b.style.setProperty('border-radius','0','important');
+  b.style.setProperty('box-shadow','none','important');
+}
+window.addEventListener('load',fixMobileBrowser);
+window.addEventListener('resize',function(){if(!maximized)centerBrowser();fixMobileBrowser();});
 
 // ===== TAB NAVIGATION =====
 var addresses={
