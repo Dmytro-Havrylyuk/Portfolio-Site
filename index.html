@@ -1536,7 +1536,11 @@ function minBrowser(){
 }
 function focusBrowser(){
   var b=document.getElementById('browser');
-  b.style.display='flex';
+  if(b.style.display==='none'){
+    b.style.display='flex';
+  } else {
+    b.style.display='none';
+  }
   var bt=document.getElementById('browserTask'); if(bt) bt.style.display='flex';
 }
 
