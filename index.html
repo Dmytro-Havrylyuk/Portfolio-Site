@@ -1368,7 +1368,7 @@ function switchTab(which) {
   var amdDetail=document.getElementById("proj-detail-amd"); if(amdDetail) amdDetail.style.display = which==="project-amd"?"block":"none";
   var isProject = which==="project"||which==="project-amd";
   var secs = ["sec-home","sec-portfolio","sec-skills","sec-contact","sec-experience"];
-  secs.forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display=isProject?"":"none"; });
+  secs.forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display=isProject?"none":""; });
   var tHome = document.getElementById("tab-home"), tProj = document.getElementById("tab-proj"), tAmd = document.getElementById("tab-proj-amd");
   if(tHome) tHome.className = "navtab"+(which==="home"?" active":"");
   if(tProj) tProj.className = "navtab"+(which==="project"?" active":"");
