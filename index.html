@@ -1252,12 +1252,12 @@ border-radius:0;padding:4px 16px;font-size:12px;font-family:Tahoma,sans-serif;cu
 </div>
 
 <!-- ===== SOLITAIRE WINDOW ===== -->
-<div id="solWindow" style="width:620px;border:2px solid #0a246a;border-radius:2px;box-shadow:0 2px 8px rgba(0,0,0,0.4);position:absolute;display:none;z-index:170;top:70px;left:140px;font-family:Tahoma,'MS Sans Serif',Geneva,sans-serif;">
+<div class="browser" id="solWindow" style="width:620px;height:520px;position:absolute;display:none;z-index:170;top:70px;left:140px;font-family:Tahoma,'MS Sans Serif',Geneva,sans-serif;">
   <div id="solTitle" style="background:linear-gradient(180deg,#1c54bd,#0a3a8b);display:flex;align-items:center;justify-content:space-between;padding:3px 6px;cursor:default;">
     <span style="color:#fff;font-size:13px;font-weight:500;">Solitaire</span>
     <div style="display:flex;gap:3px;">
       <div class="tbtn" onclick="minSolitaire()" style="width:16px;height:14px;background:#d4d0c8;border:1px solid #fff;font-size:9px;text-align:center;color:#000;cursor:pointer;">_</div>
-      <div class="tbtn" onclick="minSolitaire()" style="width:16px;height:14px;background:#d4d0c8;border:1px solid #fff;font-size:9px;text-align:center;color:#000;cursor:pointer;">&#9633;</div>
+      <div class="tbtn" onclick="maxSolitaire()" style="width:16px;height:14px;background:#d4d0c8;border:1px solid #fff;font-size:9px;text-align:center;color:#000;cursor:pointer;">&#9633;</div>
       <div class="tbtn close" onclick="closeSolitaire()" style="width:16px;height:14px;background:#c0392b;border:1px solid #fff;font-size:9px;text-align:center;color:#fff;cursor:pointer;">&times;</div>
     </div>
   </div>
@@ -1268,6 +1268,7 @@ border-radius:0;padding:4px 16px;font-size:12px;font-family:Tahoma,sans-serif;cu
     <div id="loadingMsg" style="color:#cfe8d8;font-size:13px;padding:20px;">Loading cards...</div>
   </div>
   <div id="statusBar" style="background:#d4d0c8;border-top:1px solid #808080;padding:3px 10px;font-size:12px;color:#000;display:flex;justify-content:flex-end;"></div>
+  <div class="resize-se" id="solResizeSE"></div>
 </div>
 
 
@@ -1991,6 +1992,41 @@ function closeSolitaire(){
 function minSolitaire(){
   document.getElementById('solWindow').style.display='none';
 }
+var solMaximized=false, solSavedStyle={};
+function maxSolitaire(){
+  var b=document.getElementById('solWindow');
+  if(!solMaximized){
+    solSavedStyle={width:b.style.width,height:b.style.height,left:b.style.left,top:b.style.top};
+    b.style.left='0';b.style.top='0';
+    b.style.width='100vw';b.style.height='calc(100vh - 30px)';
+    solMaximized=true;
+  } else {
+    b.style.left=solSavedStyle.left;b.style.top=solSavedStyle.top;
+    b.style.width=solSavedStyle.width;b.style.height=solSavedStyle.height;
+    solMaximized=false;
+  }
+}
+
+// ===== SOLITAIRE RESIZE =====
+(function(){
+  var b=document.getElementById('solWindow');
+  var rh=document.getElementById('solResizeSE');
+  if(!b||!rh)return;
+  var resizing=false,startX=0,startY=0,startW=0,startH=0;
+  rh.addEventListener('mousedown',function(e){
+    resizing=true;
+    startX=e.clientX;startY=e.clientY;
+    startW=b.offsetWidth;startH=b.offsetHeight;
+    e.preventDefault();e.stopPropagation();
+  });
+  document.addEventListener('mousemove',function(e){
+    if(!resizing)return;
+    var w=Math.max(480,startW+(e.clientX-startX));
+    var h=Math.max(400,startH+(e.clientY-startY));
+    b.style.width=w+'px';b.style.height=h+'px';
+  });
+  document.addEventListener('mouseup',function(){resizing=false;});
+})();
 
 // ===== SOLITAIRE WINDOW DRAG =====
 (function(){
