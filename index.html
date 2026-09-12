@@ -1983,6 +1983,10 @@ function openEgg(){
 function openSolitaire(){
   var sw=document.getElementById('solWindow');
   sw.style.display='block';
+  sw.style.position='fixed';
+  sw.style.left='50%';
+  sw.style.top='50%';
+  sw.style.transform='translate(-50%,-50%)';
   var t=document.getElementById('solTask'); if(t) t.style.display='flex';
 }
 function closeSolitaire(){
@@ -2039,7 +2043,7 @@ function maxSolitaire(){
     if(e.target.classList.contains('tbtn'))return;
     dragging=true;
     var r=b.getBoundingClientRect();
-    b.style.left=r.left+'px';b.style.top=r.top+'px';
+    b.style.transform='none';b.style.left=r.left+'px';b.style.top=r.top+'px';
     ox=e.clientX-r.left;oy=e.clientY-r.top;
     e.preventDefault();
   });
