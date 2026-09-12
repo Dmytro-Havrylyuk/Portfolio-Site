@@ -1252,13 +1252,16 @@ border-radius:0;padding:4px 16px;font-size:12px;font-family:Tahoma,sans-serif;cu
 </div>
 
 <!-- ===== SOLITAIRE WINDOW ===== -->
-<div class="browser" id="solWindow" style="width:620px;height:520px;position:absolute;display:none;z-index:170;top:70px;left:140px;font-family:Tahoma,'MS Sans Serif',Geneva,sans-serif;">
-  <div id="solTitle" style="background:linear-gradient(180deg,#1c54bd,#0a3a8b);display:flex;align-items:center;justify-content:space-between;padding:3px 6px;cursor:default;">
-    <span style="color:#fff;font-size:13px;font-weight:500;">Solitaire</span>
-    <div style="display:flex;gap:3px;">
-      <div class="tbtn" onclick="minSolitaire()" style="width:16px;height:14px;background:#d4d0c8;border:1px solid #fff;font-size:9px;text-align:center;color:#000;cursor:pointer;">_</div>
-      <div class="tbtn" onclick="maxSolitaire()" style="width:16px;height:14px;background:#d4d0c8;border:1px solid #fff;font-size:9px;text-align:center;color:#000;cursor:pointer;">&#9633;</div>
-      <div class="tbtn close" onclick="closeSolitaire()" style="width:16px;height:14px;background:#c0392b;border:1px solid #fff;font-size:9px;text-align:center;color:#fff;cursor:pointer;">&times;</div>
+<div class="browser" id="solWindow" style="width:620px;position:absolute;display:none;z-index:170;top:70px;left:140px;font-family:Tahoma,'MS Sans Serif',Geneva,sans-serif;">
+  <div class="titlebar" id="solTitle">
+    <div class="titlebar-left">
+      <span style="font-size:14px;line-height:1;">🃏</span>
+      <span>Solitaire</span>
+    </div>
+    <div class="tb-btns">
+      <div class="tbtn" onclick="minSolitaire()">_</div>
+      <div class="tbtn" onclick="maxSolitaire()">&#9633;</div>
+      <div class="tbtn close" onclick="closeSolitaire()">&times;</div>
     </div>
   </div>
   <div id="menuBar" style="background:#d4d0c8;padding:2px 8px;font-size:12px;border-bottom:1px solid #808080;display:flex;justify-content:space-between;position:relative;">
