@@ -50,7 +50,7 @@ text-shadow:1px 1px rgba(0,0,0,0.4);box-shadow:inset 0 1px rgba(255,255,255,0.5)
 .tbtn.close:hover{background:linear-gradient(180deg,#ff6060,#c82020);}
 
 /* Menubar */
-.menubar{background:#ece9d8;border-bottom:1px solid #b8b4a8;padding:2px 4px;display:flex;gap:0;flex-shrink:0;}
+.menubar{position:relative;background:#ece9d8;border-bottom:1px solid #b8b4a8;padding:2px 4px;display:flex;gap:0;flex-shrink:0;}
 .menubar span{padding:2px 7px;border-radius:2px;cursor:pointer;font-size:11px;color:#000;}
 .menubar span:hover{background:#c5d6f0;}
 .menubar span:active{background:#8cb0e8;}
@@ -223,6 +223,74 @@ z-index:60;max-width:200px;line-height:1.4;}
 /* Resize */
 .resize-se{position:absolute;bottom:0;right:0;width:14px;height:14px;cursor:nwse-resize;z-index:10;
 background:linear-gradient(135deg,transparent 50%,#b8b4a8 50%);}
+
+/* ===== SOLITAIRE WINDOW OVERRIDES ===== */
+#solWindow{
+  display:none;
+  flex-direction:column;
+  overflow:hidden;
+  min-width:520px;
+  min-height:420px;
+  max-width:calc(100vw - 20px);
+  max-height:calc(100vh - 40px);
+  z-index:190;
+}
+#solWindow.maximized{
+  position:fixed !important;
+  left:0 !important;
+  top:0 !important;
+  width:100vw !important;
+  height:calc(100vh - 30px) !important;
+  max-width:none !important;
+  max-height:none !important;
+}
+#solWindow #solTitle{cursor:move;}
+#solWindow #solTitle .titlebar-left img{width:16px;height:16px;image-rendering:auto;}
+#solWindow #solTitle .tbtn{width:21px;height:21px;}
+#solWindow #menuBar{flex-shrink:0;position:relative;}
+#solWindow #board{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  overflow:hidden;
+}
+#solWindow #board > div{min-width:0;}
+#solWindow .sol-grid-row{
+  display:flex !important;
+  align-items:flex-start;
+  gap:var(--sol-gap,9px);
+  width:100% !important;
+  min-width:0;
+  box-sizing:border-box;
+}
+#solWindow .sol-grid-cell{
+  width:var(--sol-cw,62px);
+  min-width:var(--sol-cw,62px);
+  flex:0 0 var(--sol-cw,62px);
+}
+#solWindow .sol-card-slot{
+  width:62px;
+  height:88px;
+}
+#solWindow .sol-card-el{height:88px;}
+#solWindow .sol-resize-handle{position:absolute;z-index:40;}
+#solWindow .sol-resize-n,#solWindow .sol-resize-s{left:10px;right:10px;height:7px;cursor:ns-resize;}
+#solWindow .sol-resize-n{top:-3px;}
+#solWindow .sol-resize-s{bottom:-3px;}
+#solWindow .sol-resize-e,#solWindow .sol-resize-w{top:10px;bottom:10px;width:7px;cursor:ew-resize;}
+#solWindow .sol-resize-e{right:-3px;}
+#solWindow .sol-resize-w{left:-3px;}
+#solWindow .sol-resize-ne,#solWindow .sol-resize-nw,#solWindow .sol-resize-se,#solWindow .sol-resize-sw{width:14px;height:14px;}
+#solWindow .sol-resize-ne{top:-3px;right:-3px;cursor:nesw-resize;}
+#solWindow .sol-resize-nw{top:-3px;left:-3px;cursor:nwse-resize;}
+#solWindow .sol-resize-se{right:-3px;bottom:-3px;cursor:nwse-resize;}
+#solWindow .sol-resize-sw{left:-3px;bottom:-3px;cursor:nesw-resize;}
+@media (max-width:768px){
+  #solWindow{min-width:0;min-height:0;width:100vw !important;height:calc(100vh - 30px) !important;left:0 !important;top:0 !important;}
+  #solWindow .sol-resize-handle{display:none;}
+}
 
 /* ===== CURSOR INSIDE BROWSER CONTENT ===== */
 /* Default to arrow inside the rendered page (overrides inherited custom XP cursor).
@@ -1091,7 +1159,7 @@ border-radius:0;padding:4px 16px;font-size:12px;font-family:Tahoma,sans-serif;cu
     <div class="task" id="mcTask" style="display:none;" onclick="(function(){var mc=document.getElementById('myComputer');mc.style.display=mc.style.display==='none'?'flex':'none';})()">
       <span>🖥️ My Computer</span>
     </div>
-    <div class="task" id="solTask" style="display:none;" onclick="(function(){var sw=document.getElementById('solWindow');sw.style.display=sw.style.display==='none'?'block':'none';})()">
+    <div class="task" id="solTask" style="display:none;" onclick="(function(){var sw=document.getElementById('solWindow'); if(sw.style.display==='none' || getComputedStyle(sw).display==='none'){ openSolitaire(); } else { minSolitaire(); } })()">
       <span>🃏 Solitaire</span>
     </div>
     <div class="task" id="browserTask" onclick="focusBrowser()">
@@ -1252,26 +1320,44 @@ border-radius:0;padding:4px 16px;font-size:12px;font-family:Tahoma,sans-serif;cu
 </div>
 
 <!-- ===== SOLITAIRE WINDOW ===== -->
-<div class="browser" id="solWindow" style="width:620px;position:absolute;display:none;z-index:170;top:70px;left:140px;font-family:Tahoma,'MS Sans Serif',Geneva,sans-serif;">
+<div class="browser" id="solWindow" style="width:620px;height:520px;position:absolute;display:none;z-index:170;top:70px;left:140px;font-family:Tahoma,'MS Sans Serif',Geneva,sans-serif;">
   <div class="titlebar" id="solTitle">
     <div class="titlebar-left">
-      <img src="data:image/png;base64,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" alt="">
+      <img id="solTitleIcon" alt="" src="">
       <span>Solitaire</span>
     </div>
     <div class="tb-btns">
       <div class="tbtn" onclick="minSolitaire()">_</div>
-      <div class="tbtn" onclick="maxSolitaire()">&#9633;</div>
-      <div class="tbtn close" onclick="closeSolitaire()">&times;</div>
+      <div class="tbtn" onclick="maxSolitaire()">□</div>
+      <div class="tbtn close" onclick="closeSolitaire()">×</div>
     </div>
   </div>
-  <div id="menuBar" style="background:#d4d0c8;padding:2px 8px;font-size:12px;border-bottom:1px solid #808080;display:flex;justify-content:space-between;position:relative;">
-    <div><span id="gameMenu" style="cursor:pointer;padding:2px 6px;color:#000;">Game</span><span id="helpMenu" style="cursor:pointer;padding:2px 6px;color:#000;">Help</span></div>
+  <div id="menuBar" class="menubar" style="justify-content:flex-start;">
+    <span id="gameMenu" style="padding:2px 7px;cursor:pointer;color:#000;">Game</span>
+    <span id="helpMenu" style="padding:2px 7px;cursor:pointer;color:#000;">Help</span>
+    <div id="gameDropdownStatic" style="display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #808080;box-shadow:2px 2px 4px rgba(0,0,0,0.3);z-index:10000;min-width:150px;font-size:12px;padding:2px 0;">
+      <div data-game-action="new" style="padding:4px 20px 4px 12px;cursor:pointer;color:#000;">New <span style="float:right;">F2</span></div>
+      <div data-game-action="undo" style="padding:4px 20px 4px 12px;cursor:pointer;color:#000;">Undo</div>
+      <div style="border-top:1px solid #ccc;margin:2px 0;"></div>
+      <div data-game-action="deck" style="padding:4px 20px 4px 12px;cursor:pointer;color:#000;">Deck...</div>
+      <div data-game-action="options" style="padding:4px 20px 4px 12px;cursor:pointer;color:#000;">Options...</div>
+      <div style="border-top:1px solid #ccc;margin:2px 0;"></div>
+      <div data-game-action="stats" style="padding:4px 20px 4px 12px;cursor:pointer;color:#000;">Statistics...</div>
+      <div data-game-action="exit" style="padding:4px 20px 4px 12px;cursor:pointer;color:#000;">Exit</div>
+    </div>
   </div>
   <div id="board" style="position:relative;background:#0b6b2b;padding:14px;user-select:none;overflow:hidden;min-height:300px;">
     <div id="loadingMsg" style="color:#cfe8d8;font-size:13px;padding:20px;">Loading cards...</div>
   </div>
-  <div id="statusBar" style="background:#d4d0c8;border-top:1px solid #808080;padding:3px 10px;font-size:12px;color:#000;display:flex;justify-content:flex-end;"></div>
-  <div class="resize-se" id="solResizeSE"></div>
+  <div id="statusBar" style="background:#d4d0c8;border-top:1px solid #808080;padding:3px 10px;font-size:12px;color:#000;display:flex;justify-content:flex-end;flex-shrink:0;"></div>
+  <div class="sol-resize-handle sol-resize-n" data-dir="n"></div>
+  <div class="sol-resize-handle sol-resize-s" data-dir="s"></div>
+  <div class="sol-resize-handle sol-resize-e" data-dir="e"></div>
+  <div class="sol-resize-handle sol-resize-w" data-dir="w"></div>
+  <div class="sol-resize-handle sol-resize-ne" data-dir="ne"></div>
+  <div class="sol-resize-handle sol-resize-nw" data-dir="nw"></div>
+  <div class="sol-resize-handle sol-resize-se" data-dir="se"></div>
+  <div class="sol-resize-handle sol-resize-sw" data-dir="sw"></div>
 </div>
 
 
@@ -1333,6 +1419,7 @@ function fixMobileBrowser(){
   b.style.setProperty('box-shadow','none','important');
 }
 window.addEventListener('load',fixMobileBrowser);
+window.addEventListener('load',syncSolitaireTitleIcon);
 window.addEventListener('resize',function(){if(!maximized)centerBrowser();fixMobileBrowser();});
 
 // ===== TAB NAVIGATION =====
@@ -1482,7 +1569,7 @@ history.replaceState({page:"home"}, "", window.location.href);
   // Disable drag entirely on mobile
   if(window.innerWidth<=768)return;
   tbar.addEventListener('mousedown',function(e){
-    if(e.target.classList.contains('tbtn'))return;
+    if(e.target.closest && e.target.closest('.tb-btns'))return;
     dragging=true;
     var r=b.getBoundingClientRect();
     b.style.transform='none';b.style.left=r.left+'px';b.style.top=r.top+'px';
@@ -1499,7 +1586,7 @@ history.replaceState({page:"home"}, "", window.location.href);
   document.addEventListener('mouseup',function(){dragging=false;});
   // Touch
   tbar.addEventListener('touchstart',function(e){
-    if(e.target.classList.contains('tbtn'))return;
+    if(e.target.closest && e.target.closest('.tb-btns'))return;
     dragging=true;
     var r=b.getBoundingClientRect(),t=e.touches[0];
     b.style.transform='none';b.style.left=r.left+'px';b.style.top=r.top+'px';
@@ -1522,7 +1609,7 @@ history.replaceState({page:"home"}, "", window.location.href);
   var dt=document.getElementById('dlgTitle');
   var dragging=false,ox=0,oy=0;
   dt.addEventListener('mousedown',function(e){
-    if(e.target.classList.contains('tbtn'))return;
+    if(e.target.closest && e.target.closest('.tb-btns'))return;
     dragging=true;
     var r=d.getBoundingClientRect();
     d.style.transform='none';d.style.left=r.left+'px';d.style.top=r.top+'px';
@@ -1593,10 +1680,15 @@ var maximized=false,savedStyle={};
 function maxBrowser(){
   var b=document.getElementById('browser');
   if(!maximized){
-    savedStyle={width:b.style.width,height:b.style.height};
+    savedStyle={width:b.style.width,height:b.style.height,left:b.style.left,top:b.style.top,position:b.style.position,transform:b.style.transform,zIndex:b.style.zIndex};
+    b.style.position='fixed';
     b.style.transform='none';
-    b.style.left='0';b.style.top='0';
-    b.style.width='100vw';b.style.height='calc(100vh - 30px)';
+    b.style.left='0px';
+    b.style.top='0px';
+    b.style.width='100vw';
+    b.style.height='calc(100vh - 30px)';
+    b.style.maxHeight='none';
+    b.style.zIndex='190';
     b.classList.add('maximized');
     var pw=document.querySelector('.affan-left>div:first-child>div:first-child');
     var pi=document.querySelector('.affan-photo');
@@ -1606,9 +1698,14 @@ function maxBrowser(){
     if(ab) ab.style.gridTemplateColumns='280px 1fr';
     maximized=true;
   } else {
-    b.style.left='50%';b.style.top='calc(50% - 15px)';
-    b.style.transform='translate(-50%,-50%)';
-    b.style.width=savedStyle.width;b.style.height=savedStyle.height;
+    b.style.position=savedStyle.position || 'fixed';
+    b.style.left=savedStyle.left || '50%';
+    b.style.top=savedStyle.top || 'calc(50% - 15px)';
+    b.style.transform=savedStyle.transform || 'translate(-50%,-50%)';
+    b.style.width=savedStyle.width;
+    b.style.height=savedStyle.height;
+    b.style.maxHeight='';
+    b.style.zIndex=savedStyle.zIndex || '';
     b.classList.remove('maximized');
     var pw=document.querySelector('.affan-left>div:first-child>div:first-child');
     var pi=document.querySelector('.affan-photo');
@@ -1965,7 +2062,7 @@ function openEgg(){
   var dragging=false,ox=0,oy=0;
   if(window.innerWidth<=768)return;
   tbar.addEventListener('mousedown',function(e){
-    if(e.target.classList.contains('tbtn'))return;
+    if(e.target.closest && e.target.closest('.tb-btns'))return;
     dragging=true;
     var r=b.getBoundingClientRect();
     b.style.transform='none';b.style.left=r.left+'px';b.style.top=r.top+'px';
@@ -1983,14 +2080,23 @@ function openEgg(){
 })();
 
 // ===== SOLITAIRE WINDOW =====
+function syncSolitaireTitleIcon(){
+  var srcIcon=document.querySelector('#ic-sol img');
+  var titleIcon=document.getElementById('solTitleIcon');
+  if(srcIcon&&titleIcon) titleIcon.src=srcIcon.src;
+}
 function openSolitaire(){
   var sw=document.getElementById('solWindow');
-  sw.style.display='block';
-  sw.style.position='fixed';
-  sw.style.left='50%';
-  sw.style.top='50%';
-  sw.style.transform='translate(-50%,-50%)';
+  syncSolitaireTitleIcon();
+  sw.style.transform='none';
+  sw.style.display='flex';
+  var w=sw.offsetWidth||620, h=sw.offsetHeight||520;
+  var x=Math.max(10,Math.round((window.innerWidth-w)/2));
+  var y=Math.max(10,Math.round((window.innerHeight-30-h)/2));
+  sw.style.left=x+'px';
+  sw.style.top=y+'px';
   var t=document.getElementById('solTask'); if(t) t.style.display='flex';
+  requestAnimationFrame(function(){ if(typeof render==='function' && state) render(); });
 }
 function closeSolitaire(){
   document.getElementById('solWindow').style.display='none';
@@ -2002,37 +2108,78 @@ function minSolitaire(){
 var solMaximized=false, solSavedStyle={};
 function maxSolitaire(){
   var b=document.getElementById('solWindow');
+  if(!b) return;
   if(!solMaximized){
-    solSavedStyle={width:b.style.width,height:b.style.height,left:b.style.left,top:b.style.top};
-    b.style.left='0';b.style.top='0';
-    b.style.width='100vw';b.style.height='calc(100vh - 30px)';
+    solSavedStyle={
+      width:b.style.width,height:b.style.height,left:b.style.left,top:b.style.top,
+      position:b.style.position,transform:b.style.transform,zIndex:b.style.zIndex
+    };
+    b.style.position='fixed';
+    b.style.transform='none';
+    b.style.left='0px';
+    b.style.top='0px';
+    b.style.width='100vw';
+    b.style.height='calc(100vh - 30px)';
+    b.style.maxWidth='none';
+    b.style.maxHeight='none';
+    b.style.zIndex='190';
+    b.classList.add('maximized');
     solMaximized=true;
+    requestAnimationFrame(function(){ if(typeof render==='function' && state) render(); });
   } else {
-    b.style.left=solSavedStyle.left;b.style.top=solSavedStyle.top;
-    b.style.width=solSavedStyle.width;b.style.height=solSavedStyle.height;
+    b.style.position=solSavedStyle.position || 'absolute';
+    b.style.left=solSavedStyle.left || '140px';
+    b.style.top=solSavedStyle.top || '70px';
+    b.style.width=solSavedStyle.width || '620px';
+    b.style.height=solSavedStyle.height || '520px';
+    b.style.maxWidth='calc(100vw - 20px)';
+    b.style.maxHeight='calc(100vh - 40px)';
+    b.style.transform=solSavedStyle.transform || 'none';
+    b.style.zIndex=solSavedStyle.zIndex || '170';
+    b.classList.remove('maximized');
     solMaximized=false;
+    requestAnimationFrame(function(){ if(typeof render==='function' && state) render(); });
   }
 }
 
-// ===== SOLITAIRE RESIZE =====
+// Expose title-bar handlers globally for inline button handlers.
+window.maxSolitaire=maxSolitaire;
+window.minSolitaire=minSolitaire;
+window.closeSolitaire=closeSolitaire;
+
+// ===== SOLITAIRE RESIZE (8 directions) =====
 (function(){
   var b=document.getElementById('solWindow');
-  var rh=document.getElementById('solResizeSE');
-  if(!b||!rh)return;
-  var resizing=false,startX=0,startY=0,startW=0,startH=0;
-  rh.addEventListener('mousedown',function(e){
-    resizing=true;
-    startX=e.clientX;startY=e.clientY;
-    startW=b.offsetWidth;startH=b.offsetHeight;
-    e.preventDefault();e.stopPropagation();
+  if(!b)return;
+  var handles=b.querySelectorAll('.sol-resize-handle');
+  var resizing=false,dir='',startX=0,startY=0,startW=0,startH=0,startL=0,startT=0;
+  handles.forEach(function(rh){
+    rh.addEventListener('mousedown',function(e){
+      if(solMaximized)return;
+      resizing=true;dir=rh.getAttribute('data-dir');
+      startX=e.clientX;startY=e.clientY;
+      var rect=b.getBoundingClientRect();
+      startW=rect.width;startH=rect.height;startL=rect.left;startT=rect.top;
+      b.style.left=startL+'px';b.style.top=startT+'px';b.style.transform='none';
+      e.preventDefault();e.stopPropagation();
+    });
   });
   document.addEventListener('mousemove',function(e){
     if(!resizing)return;
-    var w=Math.max(480,startW+(e.clientX-startX));
-    var h=Math.max(400,startH+(e.clientY-startY));
-    b.style.width=w+'px';b.style.height=h+'px';
+    var dx=e.clientX-startX,dy=e.clientY-startY;
+    var minW=520,minH=420,maxW=Math.max(minW,window.innerWidth-20),maxH=Math.max(minH,window.innerHeight-40);
+    var w=startW,h=startH,l=startL,t=startT;
+    if(dir.indexOf('e')!==-1) w=Math.min(maxW,Math.max(minW,startW+dx));
+    if(dir.indexOf('s')!==-1) h=Math.min(maxH,Math.max(minH,startH+dy));
+    if(dir.indexOf('w')!==-1){ w=Math.min(maxW,Math.max(minW,startW-dx)); l=startL+(startW-w); }
+    if(dir.indexOf('n')!==-1){ h=Math.min(maxH,Math.max(minH,startH-dy)); t=startT+(startH-h); }
+    l=Math.max(0,Math.min(l,window.innerWidth-w));
+    t=Math.max(0,Math.min(t,window.innerHeight-h));
+    b.style.width=w+'px';b.style.height=h+'px';b.style.left=l+'px';b.style.top=t+'px';
+    if(typeof render==='function' && state) render();
+    e.preventDefault();
   });
-  document.addEventListener('mouseup',function(){resizing=false;});
+  document.addEventListener('mouseup',function(){ if(resizing){resizing=false;dir='';} });
 })();
 
 // ===== SOLITAIRE WINDOW DRAG =====
@@ -2043,10 +2190,10 @@ function maxSolitaire(){
   var dragging=false,ox=0,oy=0;
   if(window.innerWidth<=768)return;
   tbar.addEventListener('mousedown',function(e){
-    if(e.target.classList.contains('tbtn'))return;
+    if(e.target.closest && e.target.closest('.tb-btns'))return;
     dragging=true;
     var r=b.getBoundingClientRect();
-    b.style.transform='none';b.style.left=r.left+'px';b.style.top=r.top+'px';
+    b.style.left=r.left+'px';b.style.top=r.top+'px';
     ox=e.clientX-r.left;oy=e.clientY-r.top;
     e.preventDefault();
   });
@@ -2070,6 +2217,14 @@ function maxSolitaire(){
   var board=document.getElementById('board');
   var statusBar=document.getElementById('statusBar');
   var CW=62, CH=88, GAP=9, FAN=11;
+  function updateBoardMetrics(){
+    CW=62;
+    CH=88;
+    GAP=9;
+    FAN=11;
+    board.style.setProperty('--sol-gap',GAP+'px');
+    board.style.setProperty('--sol-cw',CW+'px');
+  }
   var state=null, timerId, seconds=0, gameWon=false, autoFinishRunning=false, autoFinishTimer=null;
   var gameScoringMode='standard', gameCounted=false;
   var STATS_KEY='xpSolitaireStats_v1';
@@ -2150,6 +2305,8 @@ function maxSolitaire(){
   var MOVE_SND='data:audio/wav;base64,UklGRgoNAABXQVZFZm10IBAAAAABAAEAIlYAAESsAAACABAAZGF0YVIFAAAAAAAAAAAA/wAAAP8A/wACAP8A/wAAAAAAAQAAAP8A/wAAAAEAAwABAP4A/QD8AP8AAQADAAMA+QD8AAEAAgAAAAMA/gD7AAEA+wACAAMA+gABAAAA/QAHAP4A/wD9AAAA/QAAAAAA/gAAAPsAAAABAP4AAQD9AAAA/wD/AAEA/AAAAPwA/gABAP0AAQD8AP8A/wD9AAEA/AD/AP0A/wD/AAAA/QAAAP4A/gACAP0A/gAAAPwAAAAAAP4AAAD+AP8AAQD+AP8AAAD+AAEA/wAAAAEA/wD/AAAAAAAAAP8AAAABAP8AAQAAAP8A/gD/AAAAAQAAAAIAAgD/AAAAAAAAAAAAAAABAAIAAQAAAAEAAQAAAAEAAQADAAEAAAABAAIAAgAAAAEAAgACAAEAAQACAAEAAQABAAEAAgABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAAAAQABAAEAAQABAAEAAQAAAAEAAQABAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8A/wAAAAAA/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD+AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP4A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8AAAD/AP8A/wD/AP8A/wD/AAAA/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AAAA/wD/AP8A/wD/AP8A/wD/AP8A/wAAAAAA/wD/AP8A/wD/AP8A/wAAAAAAAAD/AP8AAAD/AP8A/wD/AP8A/wD/AAAAAAD/AP8A/wD/AAAAAAD/AP8AAAD/AP8A/wAAAP8A/wD/AAAA/wD/AP8A/wD/AP8AAAAAAP8A/wD/AP8A/wD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAABAP8A/wAAAP8AAAD/AP8AAAAAAAAA/wAAAAAAAQAAAAAAAQAAAAAAAAAAAAAAAAABAAAAAQABAAEAAAAAAAEAAAAAAAEAAQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AP8AAAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8A/wAAAP8AAAAAAAAAAAAAAP8A/wAAAAAAAAD/AAAAAAD/AP8A/wAAAAAAAAAAAAAAAAD/AP8AAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAP8A/wAAAP8A/wD/AAAAAAAAAAAA/wD/AP8A/wD/AP8A/wAAAAAAAAAAAAAAAAAAAAAA/wD/AP8A/wD/AP8A/wD9AAMABgAAAPgAAQAEAPsA+gACAAcA/wD+AP8AAAD9AP0AAAAAAAAAAQAAAP4A/wABAAAA/QD/AAAAAAD/AP8A/wD/AP8=';
   function playSound(src){
     if(!SETTINGS.sound) return;
+    var sw=document.getElementById('solWindow');
+    if(!sw || getComputedStyle(sw).display==='none') return;
     try{ var a=new Audio(src); a.volume=0.6; a.play().catch(function(){}); }catch(e){}
   }
   function playDeal(){ playSound(DEAL_SND); }
@@ -2354,9 +2511,11 @@ function maxSolitaire(){
   }
 
   function render(){
+    updateBoardMetrics();
     board.innerHTML='';
     var topRow=document.createElement('div');
-    topRow.style.cssText='display:flex;gap:'+GAP+'px;margin-bottom:'+GAP+'px;';
+    topRow.className='sol-grid-row';
+    topRow.style.cssText='margin-bottom:'+GAP+'px;--sol-gap:'+GAP+'px;'
     board.appendChild(topRow);
 
     var stockEl=makeSlot(); stockEl.style.cursor='pointer';
@@ -2371,7 +2530,8 @@ function maxSolitaire(){
       var startIdx = state.waste.length-showCount;
       for(var wi=0; wi<showCount; wi++){
         var wc=state.waste[startIdx+wi];
-        var wEl=makeCardEl(wc, wi*16, 0);
+        var wasteOffset=Math.round((wi*16) * (CW/62));
+        var wEl=makeCardEl(wc, wasteOffset, 0);
         wEl.style.zIndex=wi;
         if(wi===showCount-1){
           wEl.classList.add('waste-top-card');
@@ -2382,7 +2542,7 @@ function maxSolitaire(){
       }
     }
 
-    var spacer=document.createElement('div'); spacer.style.cssText='width:'+CW+'px;flex-shrink:0;';
+    var spacer=document.createElement('div'); spacer.className='sol-grid-cell'; spacer.style.cssText='width:'+CW+'px;min-width:'+CW+'px;flex:0 0 '+CW+'px;';
     var foundationEls=[];
     var FOUND_SYM={S:'\u2660',H:'\u2665',D:'\u2666',C:'\u2663'};
     SUITS.forEach(function(s){
@@ -2407,13 +2567,15 @@ function maxSolitaire(){
     });
 
     var tabRow=document.createElement('div');
-    tabRow.style.cssText='display:flex;gap:'+GAP+'px;height:'+tallest+'px;';
+    tabRow.className='sol-grid-row';
+    tabRow.style.cssText='height:'+tallest+'px;--sol-gap:'+GAP+'px;'
     board.appendChild(tabRow);
 
     state.tableau.forEach(function(col,ci){
       var colH=CH+Math.max(0,col.length-1)*FAN;
       var colEl=document.createElement('div');
-      colEl.style.cssText='position:relative;width:'+CW+'px;height:'+colH+'px;';
+      colEl.className='sol-grid-cell';
+      colEl.style.cssText='position:relative;width:'+CW+'px;min-width:'+CW+'px;flex:0 0 '+CW+'px;height:'+colH+'px;';
       colEl.setAttribute('data-zone','tableau'); colEl.setAttribute('data-col',ci);
       col.forEach(function(card,ri){
         var cEl=makeCardEl(card,0,ri*FAN);
@@ -2439,7 +2601,8 @@ function maxSolitaire(){
 
   function makeSlot(){
     var el=document.createElement('div');
-    el.style.cssText='width:'+CW+'px;height:'+CH+'px;border:2px dashed rgba(255,255,255,0.35);border-radius:4px;position:relative;flex-shrink:0;box-sizing:border-box;';
+    el.className='sol-card-slot';
+    el.style.cssText='width:'+CW+'px;height:'+CH+'px;border:2px dashed rgba(255,255,255,0.35);border-radius:4px;position:relative;box-sizing:border-box;';
     return el;
   }
 
@@ -2461,6 +2624,8 @@ function maxSolitaire(){
 
   function makeCardEl(card,left,top,plain){
     var el=document.createElement('div');
+    el.className='sol-card-el';
+    el.className='sol-card-el';
     el.style.cssText='position:absolute;left:'+left+'px;top:'+top+'px;width:'+CW+'px;height:'+CH+'px;border-radius:4px;border:1px solid #222;box-shadow:0 1px 2px rgba(0,0,0,0.35);box-sizing:border-box;overflow:hidden;background:#fff;';
     if(!card.faceUp){
       applyBackStyle(el, plain ? PLAIN_BACK : currentBack);
@@ -2782,45 +2947,15 @@ function maxSolitaire(){
     deckDialog=null;
   }
 
-  var gameDropdown=null;
-  function toggleGameMenu(){
-    if(gameDropdown){ closeGameMenu(); return; }
-    gameDropdown=document.createElement('div');
-    gameDropdown.style.cssText='position:absolute;top:100%;left:0;background:#fff;border:1px solid #808080;box-shadow:2px 2px 4px rgba(0,0,0,0.3);z-index:600;min-width:150px;font-size:12px;';
-    var items=[
-      {label:'New', shortcut:'F2', action:function(){ if(imagesReady) newGame(); }},
-      {label:'Undo', action:undo},
-      {label:'Deck...', action:openDeckDialog},
-      {label:'Options...', action:openOptionsDialog},
-      {label:'Statistics...', action:openStatsDialog},
-      {label:'Exit', action:exitGame}
-    ];
-    items.forEach(function(it, i){
-      if(i===2 || i===4){
-        var sep=document.createElement('div');
-        sep.style.cssText='border-top:1px solid #ccc;margin:2px 0;';
-        gameDropdown.appendChild(sep);
-      }
-      var row=document.createElement('div');
-      row.style.cssText='padding:4px 20px 4px 12px;display:flex;justify-content:space-between;gap:16px;cursor:pointer;color:#000;';
-      row.onmouseover=function(){ row.style.background='#0a246a'; row.style.color='#fff'; };
-      row.onmouseout=function(){ row.style.background=''; row.style.color='#000'; };
-      var lbl=document.createElement('span'); lbl.textContent=it.label;
-      row.appendChild(lbl);
-      if(it.shortcut){ var sc=document.createElement('span'); sc.textContent=it.shortcut; row.appendChild(sc); }
-      row.addEventListener('click', function(){ closeGameMenu(); it.action(); });
-      gameDropdown.appendChild(row);
-    });
-    document.getElementById('menuBar').appendChild(gameDropdown);
-    setTimeout(function(){ document.addEventListener('click', outsideClickCloseMenu); },0);
+  var gameMenuOpen=false;
+  var gameDropdown=document.getElementById('gameDropdownStatic');
+  function setGameMenuOpen(open){
+    gameMenuOpen=!!open;
+    if(gameDropdown) gameDropdown.style.display=gameMenuOpen?'block':'none';
   }
-  function closeGameMenu(){
-    if(gameDropdown && gameDropdown.parentNode) gameDropdown.parentNode.removeChild(gameDropdown);
-    gameDropdown=null;
-    document.removeEventListener('click', outsideClickCloseMenu);
-  }
-  function outsideClickCloseMenu(e){
-    if(gameDropdown && !gameDropdown.contains(e.target) && e.target.id!=='gameMenu'){ closeGameMenu(); }
+  function toggleGameMenu(e){
+    if(e && e.stopPropagation) e.stopPropagation();
+    setGameMenuOpen(!gameMenuOpen);
   }
 
   function exitGame(){
@@ -3005,9 +3140,29 @@ function maxSolitaire(){
     if(helpDialog && helpDialog.parentNode) helpDialog.parentNode.removeChild(helpDialog);
     helpDialog=null;
   }
-  document.getElementById('helpMenu').addEventListener('click', openHelpDialog);
+  document.getElementById('helpMenu').addEventListener('click', function(e){ e.stopPropagation(); setGameMenuOpen(false); openHelpDialog(); });
 
-  document.getElementById('gameMenu').addEventListener('click', function(e){ e.stopPropagation(); toggleGameMenu(); });
+  document.getElementById('gameMenu').addEventListener('click', function(e){ toggleGameMenu(e); });
+  if(gameDropdown){
+    Array.prototype.forEach.call(gameDropdown.querySelectorAll('[data-game-action]'), function(row){
+      row.addEventListener('mouseenter', function(){ row.style.background='#0a246a'; row.style.color='#fff'; });
+      row.addEventListener('mouseleave', function(){ row.style.background=''; row.style.color='#000'; });
+      row.addEventListener('click', function(e){
+        e.stopPropagation();
+        var action=row.getAttribute('data-game-action');
+        setGameMenuOpen(false);
+        if(action==='new'){ if(imagesReady) newGame(); }
+        else if(action==='undo'){ undo(); }
+        else if(action==='deck'){ openDeckDialog(); }
+        else if(action==='options'){ openOptionsDialog(); }
+        else if(action==='stats'){ openStatsDialog(); }
+        else if(action==='exit'){ exitGame(); }
+      });
+    });
+  }
+  document.addEventListener('click', function(e){
+    if(gameMenuOpen && !document.getElementById('menuBar').contains(e.target)) setGameMenuOpen(false);
+  });
   document.addEventListener('keydown', function(e){ if(e.key==='F2' && imagesReady) newGame(); });
 
   prepareCardImages(newGame);
