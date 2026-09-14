@@ -1206,7 +1206,7 @@ border-radius:0;padding:4px 16px;font-size:12px;font-family:Tahoma,sans-serif;cu
     </div>
     <div class="tb-btns">
       <div class="tbtn" onclick="minMyComputer()">_</div>
-      <div class="tbtn" onclick="minMyComputer()">▢</div>
+      <div class="tbtn" onclick="maxMyComputer()">▢</div>
       <div class="tbtn close" onclick="closeMyComputer()">×</div>
     </div>
   </div>
@@ -1346,7 +1346,7 @@ border-radius:0;padding:4px 16px;font-size:12px;font-family:Tahoma,sans-serif;cu
       <div data-game-action="exit" style="padding:4px 20px 4px 12px;cursor:pointer;color:#000;">Exit</div>
     </div>
   </div>
-  <div id="board" style="position:relative;background:#0b6b2b;padding:14px;user-select:none;overflow:hidden;min-height:300px;">
+  <div id="board" style="position:relative;background:#0b6b2b;padding:14px;user-select:none;overflow:hidden;min-height:300px;flex:1;">
     <div id="loadingMsg" style="color:#cfe8d8;font-size:13px;padding:20px;">Loading cards...</div>
   </div>
   <div id="statusBar" style="background:#d4d0c8;border-top:1px solid #808080;padding:3px 10px;font-size:12px;color:#000;display:flex;justify-content:flex-end;flex-shrink:0;"></div>
@@ -2041,6 +2041,34 @@ function closeMyComputer(){
 }
 function minMyComputer(){
   document.getElementById('myComputer').style.display='none';
+}
+var mcMaximized=false, mcSavedStyle={};
+function maxMyComputer(){
+  var mc=document.getElementById('myComputer');
+  if(!mcMaximized){
+    mcSavedStyle={width:mc.style.width,height:mc.style.height,left:mc.style.left,top:mc.style.top,position:mc.style.position,transform:mc.style.transform,zIndex:mc.style.zIndex};
+    mc.style.position='fixed';
+    mc.style.transform='none';
+    mc.style.left='0px';
+    mc.style.top='0px';
+    mc.style.width='100vw';
+    mc.style.height='calc(100vh - 30px)';
+    mc.style.maxHeight='none';
+    mc.style.zIndex='190';
+    mc.classList.add('maximized');
+    mcMaximized=true;
+  } else {
+    mc.style.position=mcSavedStyle.position;
+    mc.style.transform=mcSavedStyle.transform;
+    mc.style.left=mcSavedStyle.left;
+    mc.style.top=mcSavedStyle.top;
+    mc.style.width=mcSavedStyle.width;
+    mc.style.height=mcSavedStyle.height;
+    mc.style.maxHeight='';
+    mc.style.zIndex=mcSavedStyle.zIndex;
+    mc.classList.remove('maximized');
+    mcMaximized=false;
+  }
 }
 
 function selectMcItem(el){
